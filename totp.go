@@ -22,7 +22,7 @@ import (
 	"github.com/sec51/convert"
 	"github.com/sec51/convert/bigendian"
 	"github.com/sec51/cryptoengine"
-	qr "github.com/sec51/qrcode"
+	qr "github.com/skip2/go-qrcode"
 )
 
 const (
@@ -329,11 +329,7 @@ func (otp *Totp) QR() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	code, err := qr.Encode(u, qr.Q)
-	if err != nil {
-		return nil, err
-	}
-	return code.PNG(), nil
+	return qr.Encode(u, qr.Medium, 256)
 }
 
 // ToBytes serialises a TOTP object in a byte array

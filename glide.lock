@@ -1,5 +1,5 @@
 hash: edc113943b5834aa52876ee0bdeac172678a94416ed1f3ed8da78afbff402d89
-updated: 2018-09-11T13:25:32.886071+02:00
+updated: 2019-04-27T10:38:57.884678-07:00
 imports:
 - name: github.com/sec51/convert
   version: 3276ac712ca35cb9cc9a823b564fdaf89f4ac803
@@ -14,6 +14,11 @@ imports:
   version: b7779abbcaf1ec4de65f586a85fe24db31d45e7c
   subpackages:
   - coding
+- name: github.com/skip2/go-qrcode
+  version: dc11ecdae0a9889dc81a343585516404e8dc6ead
+  subpackages:
+  - bitset
+  - reedsolomon
 - name: golang.org/x/crypto
   version: beef0f4390813b96e8e68fd78570396d0f4751fc
   subpackages:
