@@ -21,15 +21,14 @@ import (
 
 	"github.com/sec51/convert"
 	"github.com/sec51/convert/bigendian"
-	"github.com/sec51/cryptoengine"
 	qr "github.com/skip2/go-qrcode"
 )
 
 const (
-	backoff_minutes = 5 // this is the time to wait before verifying another token
-	max_failures    = 3 // total amount of failures, after that the user needs to wait for the backoff time
-	counter_size    = 8 // this is defined in the RFC 4226
-	message_type    = 0 // this is the message type for the crypto engine
+	backoff_minutes = 1  // this is the time to wait before verifying another token
+	max_failures    = 30 // total amount of failures, after that the user needs to wait for the backoff time
+	counter_size    = 8  // this is defined in the RFC 4226
+	message_type    = 0  // this is the message type for the crypto engine
 )
 
 var (
@@ -449,55 +448,20 @@ func (otp *Totp) ToBytes() ([]byte, error) {
 			return nil, err
 		}
 	}
-
-	// encrypt the TOTP bytes
-	engine, err := cryptoengine.InitCryptoEngine(otp.issuer)
-	if err != nil {
-		return nil, err
-	}
-
-	// init the message to be encrypted
-	message, err := cryptoengine.NewMessage(buffer.String(), message_type)
-	if err != nil {
-		return nil, err
-	}
-
-	// encrypt it
-	encryptedMessage, err := engine.NewEncryptedMessage(message)
-	if err != nil {
-		return nil, err
-	}
-
-	return encryptedMessage.ToBytes()
-
+	return buffer.Bytes(), nil
 }
 
 // TOTPFromBytes converts a byte array to a totp object
 // it stores the state of the TOTP object, like the key, the current counter, the client offset,
 // the total amount of verification failures and the last time a verification happened
-func TOTPFromBytes(encryptedMessage []byte, issuer string) (*Totp, error) {
-
-	// init the cryptoengine
-	engine, err := cryptoengine.InitCryptoEngine(issuer)
-	if err != nil {
-		return nil, err
-	}
-
-	// decrypt the message
-	data, err := engine.Decrypt(encryptedMessage)
-	if err != nil {
-		return nil, err
-	}
-
-	// new reader
-	reader := bytes.NewReader([]byte(data.Text))
-
+func TOTPFromBytes(message []byte, issuer string) (*Totp, error) {
+	reader := bytes.NewReader(message)
 	// otp object
 	otp := new(Totp)
 
 	// get the length
 	length := make([]byte, 4)
-	_, err = reader.Read(length) // read the 4 bytes for the total length
+	_, err := reader.Read(length) // read the 4 bytes for the total length
 	if err != nil && err != io.EOF {
 		return otp, err
 	}
